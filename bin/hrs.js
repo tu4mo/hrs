@@ -2,9 +2,6 @@
 
 require('../lib/install').install()
 
-const { WORK_HOURS } = require('../lib/config')
-
-const addHours = require('date-fns/add_hours')
 const setHours = require('date-fns/set_hours')
 const setMinutes = require('date-fns/set_minutes')
 
