@@ -21,7 +21,11 @@ switch (command) {
   }
 
   case 'note': {
-    const data = addEntry({ type: EntryType.Note, note: args.join(' ') })
+    const data = addEntry({
+      note: args.join(' '),
+      time: new Date(),
+      type: EntryType.Note
+    })
     console.log(getOverview(data))
     break
   }

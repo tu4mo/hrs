@@ -88,7 +88,7 @@ const getEntries = (entries: IEntry[], startTime: Date) => {
 export const getOverview = (data: IData) => {
   const lunchEntry = getEntriesByType(data.entries, EntryType.Lunch)[0]
   const lunchStartTime = lunchEntry.time
-  const lunchDuration = lunchEntry.duration
+  const lunchDuration = lunchEntry.duration || 0
   const lunchEndTime = addHours(lunchStartTime, lunchDuration)
 
   const header = getHeader({

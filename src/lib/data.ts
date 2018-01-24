@@ -24,22 +24,20 @@ export interface IData {
 
 export interface IEntry {
   duration?: number
-  time?: Date
+  time: Date
   type: string
   note?: string
 }
 
 export const addEntry = (entry: IEntry) => {
   const data = getData()
-  const date = new Date()
 
   const dataWithNewEntry = {
     ...data,
     entries: [
       ...data.entries,
       {
-        ...entry,
-        time: date.toJSON()
+        ...entry
       }
     ]
   }
@@ -47,20 +45,19 @@ export const addEntry = (entry: IEntry) => {
   return saveData(dataWithNewEntry)
 }
 
+const convertTimesToDates = (data: any) => ({
+  ...data,
+  entries: data.entries.map((entry: any) => ({
+    ...entry,
+    time: new Date(entry.time)
+  })),
+  startTime: new Date(data.startTime)
+})
+
 export const getData = () => {
   if (fs.existsSync(file)) {
     const json = require(file)
-
-    const dataWithDates = {
-      ...json,
-      entries: json.entries.map((entry: any) => ({
-        ...entry,
-        time: new Date(entry.time)
-      })),
-      startTime: new Date(json.startTime)
-    }
-
-    return dataWithDates
+    return convertTimesToDates(json)
   }
 
   const startTime = setMilliseconds(
