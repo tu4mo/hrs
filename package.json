@@ -1,14 +1,14 @@
 {
   "name": "hrs-cli",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.0",
   "description": "",
-  "main": "src/hrs.ts",
+  "main": "dist/hrs.js",
   "bin": {
     "hrs": "./dist/hrs.js"
   },
   "scripts": {
-    "build": "tsc",
     "format": "prettier --no-semi --single-quote --write \"**/*.{js,md}\"",
+    "prepublish": "tsc",
     "start": "ts-node src/hrs",
     "test": "tslint \"src/**/*.ts\" && jest \"src\""
   },
