@@ -33,8 +33,7 @@ switch (command) {
     const data = getData()
     const newData = {
       ...data,
-      startTime: setMinutes(setHours(data.startTime, hours), minutes),
-      endTime: addHours(data.startTime, WORK_HOURS)
+      startTime: setMinutes(setHours(data.startTime, hours), minutes)
     }
     saveData(newData)
     console.log(getOverview(newData))
