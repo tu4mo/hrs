@@ -1,10 +1,10 @@
 {
-  "name": "hrs",
+  "name": "hrs-cli",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/hrs.ts",
   "bin": {
-    "hrs": "./bin/hrs.js"
+    "hrs": "./dist/hrs.js"
   },
   "scripts": {
     "build": "tsc",
