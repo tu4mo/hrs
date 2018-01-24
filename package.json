@@ -7,8 +7,10 @@
     "hrs": "./bin/hrs.js"
   },
   "scripts": {
+    "build": "tsc",
     "format": "prettier --no-semi --single-quote --write \"**/*.{js,md}\"",
-    "test": "eslint . && jest"
+    "start": "ts-node src/hrs",
+    "test": "tslint \"src/**/*.ts\" && jest \"src\""
   },
   "author": "tu4mo",
   "license": "ISC",
@@ -16,15 +18,14 @@
     "date-fns": "^1.29.0"
   },
   "devDependencies": {
-    "eslint": "^4.16.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-node": "^5.2.1",
-    "eslint-plugin-promise": "^3.6.0",
-    "eslint-plugin-standard": "^3.0.1",
+    "@types/jest": "^22.1.0",
     "jest": "^22.1.4",
-    "prettier": "^1.10.2"
+    "prettier": "^1.10.2",
+    "ts-jest": "^22.0.1",
+    "ts-node": "^4.1.0",
+    "tslint": "^5.9.1",
+    "tslint-config-prettier": "^1.6.0",
+    "typescript": "^2.6.2"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,20 @@
   },
   "bugs": {
     "url": "https://github.com/tu4mo/hrs/issues"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   },
   "homepage": "https://github.com/tu4mo/hrs",
   "preferGlobal": true

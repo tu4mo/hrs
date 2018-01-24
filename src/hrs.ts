@@ -1,26 +1,27 @@
 #!/usr/bin/env node
 
-require('../lib/install').install()
+import { install } from './lib/install'
+install()
 
-const setHours = require('date-fns/set_hours')
-const setMinutes = require('date-fns/set_minutes')
+import { setHours, setMinutes } from 'date-fns'
 
-const { addEntry, getData, saveData } = require('../lib/data')
-const { getHelp } = require('../lib/help')
-const { getOverview } = require('../lib/overview')
+import { EntryType } from './lib/constants'
+import { addEntry, getData, saveData } from './lib/data'
+import { getHelp } from './lib/help'
+import { getOverview } from './lib/overview'
 
 const [, , command, ...args] = process.argv
 
 switch (command) {
   case 'break': {
-    addEntry({ type: 'break' })
+    // addEntry({ type: 'break' })
     const data = getData()
     console.log(getOverview(data))
     break
   }
 
   case 'note': {
-    const data = addEntry({ type: 'note', note: args.join(' ') })
+    const data = addEntry({ type: EntryType.Note, note: args.join(' ') })
     console.log(getOverview(data))
     break
   }
@@ -30,7 +31,10 @@ switch (command) {
     const data = getData()
     const newData = {
       ...data,
-      startTime: setMinutes(setHours(data.startTime, hours), minutes)
+      startTime: setMinutes(
+        setHours(data.startTime, parseInt(hours, 10)),
+        parseInt(minutes, 10)
+      )
     }
     saveData(newData)
     console.log(getOverview(newData))
