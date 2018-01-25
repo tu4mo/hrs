@@ -1,3 +1,4 @@
+import { setHours } from 'date-fns'
 import * as path from 'path'
 
 import { WORK_HOURS } from '../lib/config'
@@ -31,7 +32,7 @@ describe('Day', () => {
     expect(entriesByLunch).toEqual([
       {
         duration: 0.5,
-        time: new Date('2018-01-01T09:00:00.000Z'),
+        time: setHours(day.startTime, 11),
         type: EntryType.Lunch
       }
     ])
