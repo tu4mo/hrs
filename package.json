@@ -10,7 +10,8 @@
     "format": "prettier --no-semi --single-quote --write \"**/*.{ts,md}\"",
     "prepublish": "tsc",
     "start": "ts-node src/hrs",
-    "test": "tslint \"src/**/*.ts\" && jest \"src\""
+    "test": "tslint \"src/**/*.ts\" && jest \"src\"",
+    "test:watch": "jest --watch \"src\""
   },
   "author": "tu4mo",
   "license": "ISC",
