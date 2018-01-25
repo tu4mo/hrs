@@ -1,62 +1,38 @@
 #!/usr/bin/env node
 
+import * as path from 'path'
+
 import { install } from './lib/install'
 install()
 
-import { setHours, setMinutes } from 'date-fns'
-
-import { EntryType } from './lib/constants'
-import { addEntry, getData, saveData } from './lib/data'
+import { HOME_DIR, WORK_HOURS } from './lib/config'
 import { getHelp } from './lib/help'
 import { getOverview } from './lib/overview'
 
-const [, , command, ...args] = process.argv
+import Day from './models/Day'
 
-switch (command) {
-  case 'break': {
-    // addEntry({ type: 'break' })
-    const data = getData()
-    console.log(getOverview(data))
-    break
-  }
+import { note } from './commands/note'
+import { start } from './commands/start'
 
-  case 'note': {
-    const data = addEntry({
-      note: args.join(' '),
-      time: new Date(),
-      type: EntryType.Note
-    })
-    console.log(getOverview(data))
-    break
-  }
+const commands: { [key: string]: (day: Day, args: string[]) => void } = {
+  note,
+  start
+}
 
-  case 'start': {
-    const [hours, minutes] = args[0].split(':')
-    const data = getData()
-    const newData = {
-      ...data,
-      startTime: setMinutes(
-        setHours(data.startTime, parseInt(hours, 10)),
-        parseInt(minutes, 10)
-      )
-    }
-    saveData(newData)
-    console.log(getOverview(newData))
-    break
-  }
+const [, , command = '', ...args] = process.argv
 
-  case 'help':
-  case '-?':
-  case '--help': {
-    console.log(`\n${getHelp()}\n`)
-    break
-  }
+const day = new Day({
+  date: new Date(),
+  path: path.resolve(HOME_DIR, 'data'),
+  workHours: WORK_HOURS
+})
 
-  default: {
-    const data = getData()
-    console.log(getOverview(data))
-    break
-  }
+if (commands[command]) {
+  commands[command](day, args)
+} else if (command === '') {
+  console.log(getOverview(day))
+} else {
+  console.log(`\n${getHelp()}\n`)
 }
 
 process.exit(0)
