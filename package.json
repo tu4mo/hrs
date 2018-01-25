@@ -7,7 +7,7 @@
     "hrs": "./dist/hrs.js"
   },
   "scripts": {
-    "format": "prettier --no-semi --single-quote --write \"**/*.{js,md}\"",
+    "format": "prettier --no-semi --single-quote --write \"**/*.{ts,md}\"",
     "prepublish": "tsc",
     "start": "ts-node src/hrs",
     "test": "tslint \"src/**/*.ts\" && jest \"src\""
