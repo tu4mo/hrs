@@ -3,6 +3,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": true,
+    "noUnusedLocals": true,
     "outDir": "dist",
     "sourceMap": true,
     "strict": true,
