@@ -1,65 +1,39 @@
-import * as fs from 'fs'
-import * as path from 'path'
-
-import {
-  format,
-  setHours,
-  setMilliseconds,
-  setMinutes,
-  setSeconds
-} from 'date-fns'
+import { setHours, setMilliseconds, setMinutes, setSeconds } from 'date-fns'
 
 import Entry, { EntryType } from './Entry'
+import File from './File'
 
 export default class Day {
-  public file: string
-
   public entries: Entry[] = []
   public startTime: Date
   public workHours: number
 
-  constructor(options: { date: Date; path: string; workHours: number }) {
-    this.file = path.resolve(
-      options.path,
-      `${format(options.date, 'YYYY-MM-DD')}.json`
-    )
+  private file: File
 
-    if (fs.existsSync(this.file)) {
-      const data = require(this.file)
-      const dataWithRealDates = this.convertTimesToDates(data)
+  constructor(path: string, defaults: { date: Date; workHours: number }) {
+    this.file = new File(path, defaults.date)
 
-      this.entries = dataWithRealDates.entries
-      this.startTime = dataWithRealDates.startTime
-      this.workHours = dataWithRealDates.workHours
+    try {
+      const { entries, startTime, workHours } = this.file.readFile()
+      this.entries = entries
+      this.startTime = startTime
+      this.workHours = workHours
+    } catch (err) {
+      this.startTime = setMilliseconds(
+        setSeconds(setMinutes(setHours(defaults.date, 8), 0), 0),
+        0
+      )
 
-      return
-    }
+      this.workHours = defaults.workHours
 
-    this.startTime = setMilliseconds(
-      setSeconds(setMinutes(setHours(options.date, 8), 0), 0),
-      0
-    )
+      const lunchTime = setHours(this.startTime, 11)
 
-    this.workHours = options.workHours
+      const lunchEntry = new Entry()
+      lunchEntry.duration = 0.5
+      lunchEntry.time = lunchTime
+      lunchEntry.type = EntryType.Lunch
 
-    const lunchTime = setHours(this.startTime, 11)
-
-    const lunchEntry = new Entry()
-    lunchEntry.duration = 0.5
-    lunchEntry.time = lunchTime
-    lunchEntry.type = EntryType.Lunch
-
-    this.addEntry(lunchEntry)
-  }
-
-  public convertTimesToDates(data: any) {
-    return {
-      ...data,
-      entries: data.entries.map((entry: any) => ({
-        ...entry,
-        time: new Date(entry.time)
-      })),
-      startTime: new Date(data.startTime)
+      this.addEntry(lunchEntry)
     }
   }
 
@@ -81,6 +55,6 @@ export default class Day {
       workHours: this.workHours
     }
 
-    fs.writeFileSync(this.file, JSON.stringify(data, null, '  '))
+    this.file.save(data)
   }
 }

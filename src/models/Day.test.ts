@@ -14,9 +14,8 @@ jest.mock('fs', () => ({
 
 describe('Day', () => {
   test('getEntriesByType', () => {
-    const day = new Day({
+    const day = new Day(path.resolve(__dirname), {
       date,
-      path: path.resolve(__dirname),
       workHours: WORK_HOURS
     })
 

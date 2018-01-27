@@ -21,9 +21,8 @@ const commands: { [key: string]: (day: Day, args: string[]) => void } = {
 
 const [, , command = '', ...args] = process.argv
 
-const day = new Day({
+const day = new Day(path.resolve(HOME_DIR, 'data'), {
   date: new Date(),
-  path: path.resolve(HOME_DIR, 'data'),
   workHours: WORK_HOURS
 })
 
