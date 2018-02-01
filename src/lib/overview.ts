@@ -1,8 +1,10 @@
 import { addHours } from 'date-fns'
 
 import { dim } from '../helpers/colors'
+import Emoji from '../helpers/emoji'
 import {
   getHoursBetweenTimes,
+  toFixedHours,
   toHourFormat,
   toShortDateFormat,
   toStartAndEndHourFormat
@@ -10,15 +12,6 @@ import {
 
 import Day from '../models/Day'
 import Entry, { EntryType } from '../models/Entry'
-
-const EMOJI_BREAK = '☕️'
-const EMOJI_DATE = '🗓'
-const EMOJI_INBOX = '📥'
-const EMOJI_DURATION = '⏱'
-const EMOJI_ENDTIME = '🌙'
-const EMOJI_LUNCH = '🍕'
-const EMOJI_NOTE = '🗒'
-const EMOJI_STARTTIME = '☀️'
 
 const getHeader = ({
   startTime,
@@ -33,62 +26,67 @@ const getHeader = ({
   lunchEndTime: Date
   lunchDuration: number
 }) =>
-  `${EMOJI_DATE}  ${toShortDateFormat(startTime)}  ` +
-  `${EMOJI_STARTTIME}  ${toHourFormat(startTime)}  ` +
-  `${EMOJI_ENDTIME}  ${toHourFormat(
+  `${Emoji.Calendar}  ${toShortDateFormat(startTime)}  ` +
+  `${Emoji.Sun}  ${toHourFormat(startTime)}  ` +
+  `${Emoji.Moon}  ${toHourFormat(
     addHours(startTime, workHours + lunchDuration)
   )}  ` +
-  `${EMOJI_LUNCH}  ${toStartAndEndHourFormat(
+  `${Emoji.Pizza}  ${toStartAndEndHourFormat(
     lunchStartTime,
     lunchEndTime
   )} ${lunchDuration} h  ` +
-  `${EMOJI_INBOX}  0${dim('/')}${workHours} h`
+  `${Emoji.Inbox}  0${dim('/')}${workHours} h`
 
 const getEntryEmoji = (entry: Entry) => {
   switch (entry.type) {
     case EntryType.Break:
-      return `${EMOJI_BREAK} `
+      return `${Emoji.Coffee} `
     case EntryType.Current:
-      return `${EMOJI_DURATION} `
+      return `${Emoji.Stopwatch} `
     case EntryType.Lunch:
-      return `${EMOJI_LUNCH} `
+      return `${Emoji.Pizza} `
     case EntryType.Note:
-      return `${EMOJI_NOTE} `
+      return `${Emoji.Note} `
   }
 }
 
 const getEntryTime = (startTime: Date, endTime: Date) =>
   `${toStartAndEndHourFormat(startTime, endTime)} ` +
-  `\x1b[32m${getHoursBetweenTimes(startTime, endTime)}\x1b[0m`
+  `\x1b[32m${toFixedHours(getHoursBetweenTimes(startTime, endTime))}\x1b[0m`
 
-const renderEntry = (entry: Entry, currentEntryTime: Date) =>
+const renderEntry = (entry: Entry) =>
   `${getEntryEmoji(entry)} ` +
-  `${getEntryTime(currentEntryTime, entry.time)} ` +
+  `${getEntryTime(entry.startTime, entry.endTime)} ` +
   `\x1b[2m${entry.note ? entry.note : ''}\x1b[0m`
 
-const getEntries = (entries: Entry[], startTime: Date) => {
-  let currentEntryTime: Date = startTime
+const getRenderedEntries = (day: Day) => {
+  const renderedEntries = day
+    .getEntriesByType(EntryType.Note)
+    .map(entry => renderEntry(entry))
 
-  return entries
-    .map(entry => {
-      const renderedEntry = renderEntry(entry, currentEntryTime)
-      currentEntryTime = entry.time
-      return renderedEntry
-    })
-    .concat(
-      renderEntry(
-        { time: new Date(), type: EntryType.Current },
-        currentEntryTime
-      )
-    )
-    .join('\n')
+  const latestEntry = day.getLatestEntry()
+
+  const currentEntryStartTime = latestEntry
+    ? latestEntry.endTime
+    : day.startTime
+
+  const currentEntry = new Entry(
+    EntryType.Current,
+    currentEntryStartTime,
+    new Date()
+  )
+
+  return [...renderedEntries, renderEntry(currentEntry)].join('\n')
 }
 
 export const getOverview = (day: Day) => {
   const lunchEntry = day.getEntriesByType(EntryType.Lunch)[0]
-  const lunchStartTime = lunchEntry.time
-  const lunchDuration = lunchEntry.duration || 0
-  const lunchEndTime = addHours(lunchStartTime, lunchDuration)
+  const lunchStartTime = lunchEntry.startTime
+  const lunchDuration = getHoursBetweenTimes(
+    lunchEntry.startTime,
+    lunchEntry.endTime
+  )
+  const lunchEndTime = lunchEntry.endTime
 
   const header = getHeader({
     lunchDuration,
@@ -98,10 +96,7 @@ export const getOverview = (day: Day) => {
     workHours: day.workHours
   })
 
-  const entries = getEntries(
-    day.getEntriesByType(EntryType.Note),
-    day.startTime
-  )
+  const entries = getRenderedEntries(day)
 
   return `\n${header}\n\n${entries}\n`
 }

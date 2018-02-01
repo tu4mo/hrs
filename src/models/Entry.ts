@@ -7,7 +7,14 @@ export enum EntryType {
 
 export default class Entry {
   public duration?: number
-  public time: Date
+  public endTime: Date
+  public startTime: Date
   public type: EntryType
   public note?: string
+
+  constructor(type: EntryType, startTime: Date, endTime: Date) {
+    this.endTime = endTime
+    this.startTime = startTime
+    this.type = type
+  }
 }

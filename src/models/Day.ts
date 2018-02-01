@@ -1,4 +1,10 @@
-import { setHours, setMilliseconds, setMinutes, setSeconds } from 'date-fns'
+import {
+  addHours,
+  setHours,
+  setMilliseconds,
+  setMinutes,
+  setSeconds
+} from 'date-fns'
 
 import Entry, { EntryType } from './Entry'
 import File from './File'
@@ -26,12 +32,13 @@ export default class Day {
 
       this.workHours = defaults.workHours
 
-      const lunchTime = setHours(this.startTime, 11)
-
-      const lunchEntry = new Entry()
-      lunchEntry.duration = 0.5
-      lunchEntry.time = lunchTime
-      lunchEntry.type = EntryType.Lunch
+      const lunchStartTime = setHours(this.startTime, 11)
+      const lunchEndTime = addHours(lunchStartTime, 0.5)
+      const lunchEntry = new Entry(
+        EntryType.Lunch,
+        lunchStartTime,
+        lunchEndTime
+      )
 
       this.addEntry(lunchEntry)
     }
@@ -45,7 +52,15 @@ export default class Day {
   public getEntriesByType(type: EntryType) {
     return this.entries
       .filter(entry => entry.type === type)
-      .sort((a, b) => (a.time > b.time ? 1 : b.time > a.time ? -1 : 0))
+      .sort(
+        (a, b) =>
+          a.startTime > b.startTime ? 1 : b.startTime > a.startTime ? -1 : 0
+      )
+  }
+
+  public getLatestEntry() {
+    const entries = this.getEntriesByType(EntryType.Note).reverse()
+    return entries[0]
   }
 
   public save() {

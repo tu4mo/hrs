@@ -1,4 +1,4 @@
-import { setHours } from 'date-fns'
+import { addHours, setHours } from 'date-fns'
 import * as path from 'path'
 
 import { WORK_HOURS } from '../lib/config'
@@ -19,10 +19,12 @@ describe('Day', () => {
       workHours: WORK_HOURS
     })
 
-    const noteEntry = new Entry()
+    const noteEntry = new Entry(
+      EntryType.Note,
+      new Date('2018-01-01T17:00:00.000Z'),
+      new Date('2018-01-01T18:00:00.000Z')
+    )
     noteEntry.note = 'Did some stuff and more'
-    noteEntry.time = new Date('2018-01-01T17:00:00.000Z')
-    noteEntry.type = EntryType.Note
     day.addEntry(noteEntry)
 
     const entriesByLunch = day.getEntriesByType(EntryType.Lunch)
@@ -30,16 +32,17 @@ describe('Day', () => {
 
     expect(entriesByLunch).toEqual([
       {
-        duration: 0.5,
-        time: setHours(day.startTime, 11),
+        endTime: addHours(setHours(day.startTime, 11), 0.5),
+        startTime: setHours(day.startTime, 11),
         type: EntryType.Lunch
       }
     ])
 
     expect(entriesByNote).toEqual([
       {
+        endTime: new Date('2018-01-01T18:00:00.000Z'),
         note: 'Did some stuff and more',
-        time: new Date('2018-01-01T17:00:00.000Z'),
+        startTime: new Date('2018-01-01T17:00:00.000Z'),
         type: EntryType.Note
       }
     ])

@@ -1,11 +1,9 @@
 import { format } from 'date-fns'
 
-export const getHoursBetweenTimes = (startTime: Date, endTime: Date) => {
-  const hoursBetween =
-    (endTime.getTime() - startTime.getTime()) / 1000 / 60 / 60
+export const getHoursBetweenTimes = (startTime: Date, endTime: Date) =>
+  (endTime.getTime() - startTime.getTime()) / 1000 / 60 / 60
 
-  return Math.abs(hoursBetween).toFixed(2)
-}
+export const toFixedHours = (hours: number) => Math.abs(hours).toFixed(2)
 
 export const toHourFormat = (date: Date) => format(date, 'HH:mm')
 
