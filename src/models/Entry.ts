@@ -1,3 +1,5 @@
+import { differenceInSeconds } from 'date-fns'
+
 export enum EntryType {
   Break = 'break',
   Current = 'current',
@@ -6,7 +8,6 @@ export enum EntryType {
 }
 
 export default class Entry {
-  public duration?: number
   public endTime: Date
   public startTime: Date
   public type: EntryType
@@ -16,5 +17,9 @@ export default class Entry {
     this.endTime = endTime
     this.startTime = startTime
     this.type = type
+  }
+
+  public getDifference() {
+    return differenceInSeconds(this.endTime, this.startTime)
   }
 }

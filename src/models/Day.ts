@@ -21,7 +21,13 @@ export default class Day {
 
     try {
       const { entries, startTime, workHours } = this.file.readFile()
-      this.entries = entries
+
+      entries.forEach((entry: Entry) => {
+        const newEntry = new Entry(entry.type, entry.startTime, entry.endTime)
+        newEntry.note = entry.note
+        this.addEntry(newEntry)
+      })
+
       this.startTime = startTime
       this.workHours = workHours
     } catch (err) {
@@ -41,12 +47,20 @@ export default class Day {
       )
 
       this.addEntry(lunchEntry)
+      this.save()
     }
   }
 
   public addEntry(entry: Entry) {
     this.entries.push(entry)
-    this.save()
+  }
+
+  public getDurationOfEntriesByType(type: EntryType) {
+    const entries = this.getEntriesByType(type)
+    return entries.reduce(
+      (previousValue, entry) => previousValue + entry.getDifference(),
+      0
+    )
   }
 
   public getEntriesByType(type: EntryType) {

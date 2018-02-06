@@ -14,6 +14,7 @@ export const note = (day: Day, args: string[]) => {
   entry.note = args.join(' ')
 
   day.addEntry(entry)
+  day.save()
 
   console.log(getOverview(day))
 }

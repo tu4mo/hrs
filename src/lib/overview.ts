@@ -1,10 +1,9 @@
 import { addHours } from 'date-fns'
 
-import { dim } from '../helpers/colors'
+import { dim, green } from '../helpers/colors'
 import Emoji from '../helpers/emoji'
 import {
-  getHoursBetweenTimes,
-  toFixedHours,
+  secondsToHours,
   toHourFormat,
   toShortDateFormat,
   toStartAndEndHourFormat
@@ -15,12 +14,14 @@ import Entry, { EntryType } from '../models/Entry'
 
 const getHeader = ({
   startTime,
+  notedTime,
   workHours,
   lunchStartTime,
   lunchEndTime,
   lunchDuration
 }: {
   startTime: Date
+  notedTime: number
   workHours: number
   lunchStartTime: Date
   lunchEndTime: Date
@@ -35,7 +36,7 @@ const getHeader = ({
     lunchStartTime,
     lunchEndTime
   )} ${lunchDuration} h  ` +
-  `${Emoji.Inbox}  0${dim('/')}${workHours} h`
+  `${Emoji.Inbox}  ${notedTime}${dim('/')}${workHours} h`
 
 const getEntryEmoji = (entry: Entry) => {
   switch (entry.type) {
@@ -50,14 +51,11 @@ const getEntryEmoji = (entry: Entry) => {
   }
 }
 
-const getEntryTime = (startTime: Date, endTime: Date) =>
-  `${toStartAndEndHourFormat(startTime, endTime)} ` +
-  `\x1b[32m${toFixedHours(getHoursBetweenTimes(startTime, endTime))}\x1b[0m`
-
 const renderEntry = (entry: Entry) =>
   `${getEntryEmoji(entry)} ` +
-  `${getEntryTime(entry.startTime, entry.endTime)} ` +
-  `\x1b[2m${entry.note ? entry.note : ''}\x1b[0m`
+  `${toStartAndEndHourFormat(entry.startTime, entry.endTime)} ` +
+  `${green(secondsToHours(entry.getDifference()).toString())} ` +
+  `${entry.note ? dim(entry.note) : ''}`
 
 const getRenderedEntries = (day: Day) => {
   const renderedEntries = day
@@ -81,17 +79,12 @@ const getRenderedEntries = (day: Day) => {
 
 export const getOverview = (day: Day) => {
   const lunchEntry = day.getEntriesByType(EntryType.Lunch)[0]
-  const lunchStartTime = lunchEntry.startTime
-  const lunchDuration = getHoursBetweenTimes(
-    lunchEntry.startTime,
-    lunchEntry.endTime
-  )
-  const lunchEndTime = lunchEntry.endTime
 
   const header = getHeader({
-    lunchDuration,
-    lunchEndTime,
-    lunchStartTime,
+    lunchDuration: secondsToHours(lunchEntry.getDifference()),
+    lunchEndTime: lunchEntry.endTime,
+    lunchStartTime: lunchEntry.startTime,
+    notedTime: secondsToHours(day.getDurationOfEntriesByType(EntryType.Note)),
     startTime: day.startTime,
     workHours: day.workHours
   })
