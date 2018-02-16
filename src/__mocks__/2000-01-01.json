@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "endTime": "2018-02-06T09:30:00.000Z",
+      "startTime": "2018-02-06T09:00:00.000Z",
+      "type": "lunch"
+    },
+    {
+      "endTime": "2018-02-06T20:06:38.000Z",
+      "startTime": "2018-02-06T08:00:00.000Z",
+      "type": "note",
+      "note": "Hello"
+    }
+  ],
+  "startTime": "2018-02-06T08:00:00.000Z",
+  "workHours": 7.5
+}

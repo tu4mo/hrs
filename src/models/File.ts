@@ -10,6 +10,10 @@ export default class File {
     this.file = path.resolve(pathToFile, `${format(date, 'YYYY-MM-DD')}.json`)
   }
 
+  public getFile() {
+    return this.file
+  }
+
   public readFile() {
     if (fs.existsSync(this.file)) {
       const data = fs.readFileSync(this.file)
