@@ -7,7 +7,7 @@ export default class File {
   private file: string
 
   constructor(pathToFile: string, date: Date) {
-    this.file = path.resolve(pathToFile, `${format(date, 'YYYY-MM-DD')}.json`)
+    this.file = path.resolve(pathToFile, `${format(date, 'yyyy-MM-dd')}.json`)
   }
 
   public getFile() {

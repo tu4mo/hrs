@@ -10,4 +10,4 @@ export const secondsToHours = (seconds: number) =>
 export const toStartAndEndHourFormat = (startTime: Date, endTime: Date) =>
   `${toHourFormat(startTime)}\x1b[2m-\x1b[0m${toHourFormat(endTime)}`
 
-export const toShortDateFormat = (date: Date) => format(date, 'D.M.')
+export const toShortDateFormat = (date: Date) => format(date, 'd.M.')
